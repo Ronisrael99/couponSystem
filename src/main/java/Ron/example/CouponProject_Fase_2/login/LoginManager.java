@@ -1,30 +1,28 @@
 package Ron.example.CouponProject_Fase_2.login;
 
-import Ron.example.CouponProject_Fase_2.Repositories.CompanyRepository;
-import Ron.example.CouponProject_Fase_2.services.testService.ClientService;
+import Ron.example.CouponProject_Fase_2.services.AdminService;
+import Ron.example.CouponProject_Fase_2.services.ClientService;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.springframework.stereotype.Service;
 
 @Service
+@Data
+@AllArgsConstructor
 public class LoginManager {
-    private LoginManager instance;
 
-    private LoginManager(){}
+    AdminService adminService;
 
-    public LoginManager getInstance() {
-        return instance;
+
+    public ClientService clientFactory(ClientType clientType){
+        switch (clientType){
+            case ADMINISTRATOR:
+                return adminService;
+        }
+        return null;
     }
 
-    public ClientService logIn(String email, String password, ClientType clientType){
-        switch (clientType){
-            case COMPANY:
-                CompanyRepository companyRepository;
-                if (companyRepository.existsByEmailAndPassword(email, password)){
-                return context.getBean(CompanyService.class);
-                } else {
-                    return null;
-                }
-            default:
-                return null;
-        }
+    public boolean login(String email, String password, ClientType clientType){
+        return clientFactory(clientType).login(email, password);
     }
 }
