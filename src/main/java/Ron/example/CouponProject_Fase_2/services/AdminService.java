@@ -13,7 +13,7 @@ import java.security.PublicKey;
 import java.util.List;
 
 @Service
-public class AdminService {
+public class AdminService extends ClientService{
     private CustomerRepository customerRepository;
     private CouponRepository couponRepository;
     private CompanyRepository companyRepository;
@@ -24,7 +24,8 @@ public class AdminService {
         this.companyRepository = companyRepository;
     }
 
-    public boolean isLogIn(String email, String password){ // work
+    @Override
+    public boolean login(String email, String password){
         return (email.equals("admin@admin.com") && password.equals("admin"));
     }
 
