@@ -6,19 +6,20 @@ import Ron.example.CouponProject_Fase_2.Repositories.CustomerRepository;
 import Ron.example.CouponProject_Fase_2.exceptions.CannotAddCouponWithSameTitleException;
 import Ron.example.CouponProject_Fase_2.exceptions.CannotChangeCompanyException;
 import Ron.example.CouponProject_Fase_2.exceptions.CompanyNotExistException;
+import Ron.example.CouponProject_Fase_2.exceptions.UnauthorizedException;
 import Ron.example.CouponProject_Fase_2.models.Category;
 import Ron.example.CouponProject_Fase_2.models.Company;
 import Ron.example.CouponProject_Fase_2.models.Coupon;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
-public class CompanyService {
+public class CompanyService extends ClientService{
     private CompanyRepository companyRepository;
     private CustomerRepository customerRepository;
     private CouponRepository couponRepository;
-    private int currentCompany;
 
     public CompanyService(CompanyRepository companyRepository, CustomerRepository customerRepository, CouponRepository couponRepository) {
         this.companyRepository = companyRepository;
@@ -27,18 +28,20 @@ public class CompanyService {
     }
 
 
-    public boolean isLogIn(String email, String password){
+    @Override
+    public String login(String email, String password){
         if (companyRepository.existsByEmailAndPassword(email, password)){
             Company loggedInCompany = companyRepository.findByEmail(email);
-            currentCompany = loggedInCompany.getId();
-            return true;
+            String uuid = UUID.randomUUID().toString();
+            tokenToId.put(uuid, loggedInCompany.getId());
+            return uuid;
         } else {
-            return false;
+            return null;
         }
     }
 
-    public void addCoupon(Coupon coupon) throws CompanyNotExistException, CannotAddCouponWithSameTitleException {
-        Company company = companyRepository.findById(currentCompany).orElseThrow(CompanyNotExistException::new);
+    public void addCoupon(String token, Coupon coupon) throws CompanyNotExistException, CannotAddCouponWithSameTitleException, UnauthorizedException {
+        Company company = companyRepository.findById(getIdFromToken(token)).orElseThrow(CompanyNotExistException::new);
         for (Coupon c:company.getCoupons()) {
             if (c.getTitle().equals(coupon.getTitle())){
                 throw new CannotAddCouponWithSameTitleException();
@@ -47,8 +50,8 @@ public class CompanyService {
         couponRepository.save(coupon);
     }
 
-    public void updateCoupon(Coupon coupon) throws CompanyNotExistException, CannotAddCouponWithSameTitleException, CannotChangeCompanyException {
-        Company company = companyRepository.findById(currentCompany).orElseThrow(CompanyNotExistException::new);
+    public void updateCoupon(String token, Coupon coupon) throws CompanyNotExistException, CannotAddCouponWithSameTitleException, CannotChangeCompanyException, UnauthorizedException {
+        Company company = companyRepository.findById(getIdFromToken(token)).orElseThrow(CompanyNotExistException::new);
         for (Coupon c:company.getCoupons()) {
             if (c.getTitle().equals(coupon.getTitle())){
                 throw new CannotAddCouponWithSameTitleException();
@@ -68,20 +71,20 @@ public class CompanyService {
         }
     }
 
-    public List<Coupon> getAllCompanyCoupons() throws CompanyNotExistException {
-        Company company = companyRepository.findById(currentCompany).orElseThrow(CompanyNotExistException::new);
+    public List<Coupon> getAllCompanyCoupons(String token) throws CompanyNotExistException, UnauthorizedException {
+        Company company = companyRepository.findById(getIdFromToken(token)).orElseThrow(CompanyNotExistException::new);
         return couponRepository.findAll().stream().filter((c) -> c.getCompany().equals(company)).toList();
     }
 
-    public List<Coupon> getAllCompanyCouponsByCategory(Category category) throws CompanyNotExistException {
-        return getAllCompanyCoupons().stream().filter((c) -> c.getCategory().equals(category)).toList();
+    public List<Coupon> getAllCompanyCouponsByCategory(String token, Category category) throws CompanyNotExistException, UnauthorizedException {
+        return getAllCompanyCoupons(token).stream().filter((c) -> c.getCategory().equals(category)).toList();
     }
 
-    public List<Coupon> getAllCompanyCouponsToMaxPrice(int maxPrice) throws CompanyNotExistException {
-        return getAllCompanyCoupons().stream().filter((c) -> c.getPrice() <= maxPrice).toList();
+    public List<Coupon> getAllCompanyCouponsToMaxPrice(String token, int maxPrice) throws CompanyNotExistException, UnauthorizedException {
+        return getAllCompanyCoupons(token).stream().filter((c) -> c.getPrice() <= maxPrice).toList();
     }
 
-    public Company getCompanyDetails() throws CompanyNotExistException {
-        return companyRepository.findById(currentCompany).orElseThrow(CompanyNotExistException::new);
+    public Company getCompanyDetails(String token) throws CompanyNotExistException, UnauthorizedException {
+        return companyRepository.findById(getIdFromToken(token)).orElseThrow(CompanyNotExistException::new);
     }
 }
