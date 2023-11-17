@@ -1,5 +1,6 @@
 package Ron.example.CouponProject_Fase_2.login;
 
+import Ron.example.CouponProject_Fase_2.exceptions.UnauthorizedException;
 import Ron.example.CouponProject_Fase_2.services.AdminService;
 import Ron.example.CouponProject_Fase_2.services.ClientService;
 import Ron.example.CouponProject_Fase_2.services.CompanyService;
@@ -29,8 +30,7 @@ public class LoginManager {
         return null;
     }
 
-    public String login(String email, String password, ClientType clientType){
-//        assert clientFactory(clientType) != null;
+    public String login(String email, String password, ClientType clientType) throws UnauthorizedException {
         return clientFactory(clientType).login(email, password);
     }
 }

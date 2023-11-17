@@ -22,6 +22,6 @@ public class Customer {
     private String lastName;
     private String email;
     private String password;
-    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Coupon> coupons;
 }

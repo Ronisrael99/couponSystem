@@ -20,12 +20,14 @@ public abstract class ClientService {
      */
     protected Map<String, Integer> tokenToId = new HashMap<>();
 
-    public abstract String login(String email, String password);
-    protected int getIdFromToken(String token) throws UnauthorizedException {
-        if (tokenToId.containsKey(token)){
-            return tokenToId.get(token);
-        } else {
+    public abstract String login(String email, String password) throws UnauthorizedException;
+
+    public void checkToken(String token) throws UnauthorizedException {
+        if (!tokenToId.containsKey(token)){
             throw new UnauthorizedException();
         }
+    }
+    public int getIdFromToken(String token) {
+            return tokenToId.get(token);
     }
 }
