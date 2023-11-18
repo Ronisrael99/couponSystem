@@ -22,6 +22,6 @@ public class CouponProjectFase2Application {
 
 	public static void main(String[] args) {
 		ConfigurableApplicationContext context = SpringApplication.run(CouponProjectFase2Application.class, args);
-			// COMPLETE ALL CONTROLLERS(MOVE TOKEN LOGIC TO CONTROLLER), GLOBAL EXCEPTION HANDLERS, EDIT AOP CLASS, LEARN TESTS, ADD LOGGERS
+			// LEARN TESTS, ADD EFFICIENCY FOR GETTING LISTS BY CATEGORY AND PRICE
 	}
 }

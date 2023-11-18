@@ -1,27 +1,23 @@
 package Ron.example.CouponProject_Fase_2.models;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.List;
 
+/**
+ * This object will represent the Coupon ENTITY
+ */
 @Entity
 @Table(name = "coupons")
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class Coupon {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @ManyToOne
-    @JsonManagedReference
+    @JsonBackReference
     private Company company;
     @Enumerated(value = EnumType.STRING)
     private Category category;

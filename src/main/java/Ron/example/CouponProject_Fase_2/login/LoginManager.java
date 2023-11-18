@@ -6,9 +6,11 @@ import Ron.example.CouponProject_Fase_2.services.ClientService;
 import Ron.example.CouponProject_Fase_2.services.CompanyService;
 import Ron.example.CouponProject_Fase_2.services.CustomerService;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import org.springframework.stereotype.Service;
 
+/**
+ * A service class responsible for managing user login operations.
+ */
 @Service
 @AllArgsConstructor
 public class LoginManager {
@@ -18,6 +20,11 @@ public class LoginManager {
     private CustomerService customerService;
 
 
+    /**
+     * Creates and returns an instance of the appropriate client service based on the provided client type.
+     * @param clientType The type of client (Administrator, Company, or Customer).
+     * @return An instance of the corresponding client service.
+     */
     private ClientService clientFactory(ClientType clientType){
         switch (clientType){
             case ADMINISTRATOR:
@@ -30,6 +37,14 @@ public class LoginManager {
         return null;
     }
 
+    /**
+     * Performs a login operation for a user of the specified client type.
+     * @param email The email of the user attempting to log in.
+     * @param password The password of the user attempting to log in.
+     * @param clientType The type of client (Administrator, Company, or Customer).
+     * @return A unique authentication token if the login is successful.
+     * @throws UnauthorizedException If the login is unsuccessful.
+     */
     public String login(String email, String password, ClientType clientType) throws UnauthorizedException {
         return clientFactory(clientType).login(email, password);
     }

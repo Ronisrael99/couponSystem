@@ -2,24 +2,18 @@ package Ron.example.CouponProject_Fase_2.aop;
 
 import Ron.example.CouponProject_Fase_2.exceptions.UnauthorizedException;
 import Ron.example.CouponProject_Fase_2.services.AdminService;
-import Ron.example.CouponProject_Fase_2.services.ClientService;
 import Ron.example.CouponProject_Fase_2.services.CompanyService;
 import Ron.example.CouponProject_Fase_2.services.CustomerService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
-import java.io.IOException;
-
+/**
+ * Aspect for handling token validation for different client types (Admin, Company, Customer).
+ */
 @Aspect
 @Component
 public class ClientTokenAop {
@@ -34,42 +28,55 @@ public class ClientTokenAop {
     CustomerService customerService;
 
 
+    /**
+     * Around advice to check the token for AdminController methods.
+     * @param method The proceeding join point representing the intercepted method.
+     * @return The result of the intercepted method.
+     * @throws Throwable If an error occurs during method execution.
+     */
     @Around("execution(public * Ron.example.CouponProject_Fase_2.controllers.AdminController.*(..))")
-    public Object checkAdminToken(ProceedingJoinPoint method) throws IOException {
-        String token = request.getHeader("Authorization");
-        try {
-            adminService.checkToken(token);
-            return method.proceed();
-        } catch (Throwable e) {
-            HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
-            response.sendError(HttpStatus.UNAUTHORIZED.value(), "Unauthorized");
-            return null;
-        }
+    public Object checkAdminToken(ProceedingJoinPoint method) throws Throwable {
+        String token = tokenHandler();
+        adminService.checkToken(token);
+        return method.proceed();
     }
 
+    /**
+     * Around advice to check the token for CompanyController methods.
+     * @param method The proceeding join point representing the intercepted method.
+     * @return The result of the intercepted method.
+     * @throws Throwable If an error occurs during method execution.
+     */
     @Around("execution(public * Ron.example.CouponProject_Fase_2.controllers.CompanyController.*(..))")
-    public Object checkCompanyToken(ProceedingJoinPoint method) throws IOException {
-        String token = request.getHeader("Authorization");
-        try {
-            companyService.checkToken(token);
-            return method.proceed();
-        } catch (Throwable e) {
-            HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
-            response.sendError(HttpStatus.UNAUTHORIZED.value(), "Unauthorized");
-            return null;
-        }
+    public Object checkCompanyToken(ProceedingJoinPoint method) throws Throwable {
+        String token = tokenHandler();
+        companyService.checkToken(token);
+        return method.proceed();
     }
 
+    /**
+     * Around advice to check the token for CustomerController methods.
+     * @param method The proceeding join point representing the intercepted method.
+     * @return The result of the intercepted method.
+     * @throws Throwable If an error occurs during method execution.
+     */
     @Around("execution(public * Ron.example.CouponProject_Fase_2.controllers.CustomerController.*(..))")
-    public Object checkCustomerToken(ProceedingJoinPoint method) throws IOException {
+    public Object checkCustomerToken(ProceedingJoinPoint method) throws Throwable {
+        String token = tokenHandler();
+        customerService.checkToken(token);
+        return method.proceed();
+    }
+
+    /**
+     * Handles retrieving the token from the request headers.
+     * @return The token retrieved from the request headers.
+     * @throws UnauthorizedException If the token is not present in the request headers.
+     */
+    private String tokenHandler () throws UnauthorizedException {
         String token = request.getHeader("Authorization");
-        try {
-            customerService.checkToken(token);
-            return method.proceed();
-        } catch (Throwable e) {
-            HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
-            response.sendError(HttpStatus.UNAUTHORIZED.value(), "Unauthorized");
-            return null;
+        if (token == null){
+            throw new UnauthorizedException();
         }
+        return token;
     }
 }
