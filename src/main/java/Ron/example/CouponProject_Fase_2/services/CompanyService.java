@@ -144,7 +144,8 @@ public class CompanyService extends ClientService{
      * @throws ObjectNotExistException If the company does not exist.
      */
     public List<Coupon> getAllCompanyCouponsByCategory(String token, Category category) throws ObjectNotExistException {
-        return couponRepository.findAllByCategory(category);
+        Company company = companyRepository.findById(getIdFromToken(token)).orElseThrow(() -> new ObjectNotExistException("Company not exist"));
+        return couponRepository.findAllByCategoryAndCompany(category, company);
     }
 
     /**
@@ -155,7 +156,8 @@ public class CompanyService extends ClientService{
      * @throws ObjectNotExistException If the company does not exist.
      */
     public List<Coupon> getAllCompanyCouponsToMaxPrice(String token, double maxPrice) throws ObjectNotExistException {
-        return couponRepository.findAllByPriceLessThan(maxPrice);
+        Company company = companyRepository.findById(getIdFromToken(token)).orElseThrow(()-> new ObjectNotExistException("Company not exist"));
+        return couponRepository.findAllByPriceLessThanAndCompany(maxPrice, company);
     }
 
     /**
