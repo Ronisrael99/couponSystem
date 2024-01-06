@@ -19,6 +19,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("admin")
+@CrossOrigin
 public class AdminController {
     private AdminService adminService;
 
@@ -66,16 +67,7 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getOneCustomer(id));
     }
 
-    /**
-     * Retrieves details of a specific coupon by ID.
-     * @param id The ID of the coupon.
-     * @return ResponseEntity containing the details of the coupon.
-     * @throws ObjectNotExistException If the coupon with the specified ID does not exist.
-     */
-    @GetMapping("/coupon/{id}")
-    public ResponseEntity<Coupon> getOneCoupon(@PathVariable int id) throws ObjectNotExistException {
-        return ResponseEntity.ok(adminService.getOneCoupon(id));
-    }
+
 
     /**
      * Adds a new company to the system.
@@ -87,19 +79,6 @@ public class AdminController {
     public ResponseEntity<OkResponse> addCompany(@RequestBody Company company) throws ObjectAlreadyExistException {
         adminService.addCompany(company);
         OkResponse okResponse = OkResponse.builder().status(HttpStatus.CREATED.value()).message("Added company").build();
-        return ResponseEntity.status(HttpStatus.CREATED).body(okResponse);
-    }
-
-    /**
-     * Adds a new customer to the system.
-     * @param customer The customer to be added.
-     * @return ResponseEntity with OkResponse indicating the status and message.
-     * @throws ObjectAlreadyExistException If the customer already exists.
-     */
-    @PostMapping("/customer")
-    public ResponseEntity<OkResponse> addCustomer(@RequestBody Customer customer) throws ObjectAlreadyExistException {
-        adminService.addCustomer(customer);
-        OkResponse okResponse = OkResponse.builder().status(HttpStatus.CREATED.value()).message("Added customer").build();
         return ResponseEntity.status(HttpStatus.CREATED).body(okResponse);
     }
 

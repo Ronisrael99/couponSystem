@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
  * Controller class for handling login requests.
  */
 @RestController
+@CrossOrigin
 public class LoginController {
 
     private LoginManager loginManager;

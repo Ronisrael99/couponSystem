@@ -25,7 +25,7 @@ public class Company {
     private String email;
     private String password;
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "company", cascade = CascadeType.ALL)
-    @JsonManagedReference
+//    @JsonManagedReference
     private List<Coupon> coupons;
 
 }

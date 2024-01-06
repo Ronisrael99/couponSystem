@@ -188,14 +188,6 @@ public class AdminService extends ClientService{
         return customerRepository.findById(customerId).orElseThrow(() -> new ObjectNotExistException("Customer not exist"));
     }
 
-    /**
-     * Retrieves coupon by its ID.
-     * @param couponId The ID of the coupon.
-     * @return The details of the coupon.
-     * @throws ObjectNotExistException If the coupon with the specified ID does not exist.
-     */
-    public Coupon getOneCoupon(int couponId) throws ObjectNotExistException {
-        return couponRepository.findById(couponId).orElseThrow(() -> new ObjectNotExistException("Coupon not exist"));
-    }
+
 
 }

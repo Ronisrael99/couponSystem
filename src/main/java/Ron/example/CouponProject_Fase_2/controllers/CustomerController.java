@@ -18,6 +18,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("customer")
+@CrossOrigin
 public class CustomerController {
     private CustomerService customerService;
 
@@ -35,6 +36,8 @@ public class CustomerController {
     public ResponseEntity<Customer> getCustomerDetails (@RequestHeader(name = "Authorization") String token) throws ObjectNotExistException {
         return ResponseEntity.ok(customerService.getCustomerDetails(token));
     }
+
+
 
     /**
      * Retrieves all coupons associated with the current customer.

@@ -19,6 +19,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("company")
+@CrossOrigin
 public class CompanyController {
     private CompanyService companyService;
 
