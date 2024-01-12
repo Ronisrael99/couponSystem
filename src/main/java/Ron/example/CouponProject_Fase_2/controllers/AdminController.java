@@ -82,20 +82,7 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.CREATED).body(okResponse);
     }
 
-    /**
-     * Updates an existing company in the system.
-     * @param company The updated company details.
-     * @return ResponseEntity with OkResponse indicating the status and message.
-     * @throws ObjectNotExistException If the company with the specified ID does not exist.
-     * @throws ObjectAlreadyExistException If an attempt is made to change the company name to an existing name.
-     * @throws CannotUpdateOrDeleteException If an attempt is made to update the company name.
-     */
-    @PutMapping("/update/company")
-    public ResponseEntity<OkResponse> updateCompany (@RequestBody Company company) throws ObjectNotExistException, ObjectAlreadyExistException, CannotUpdateOrDeleteException {
-        adminService.updateCompany(company);
-        OkResponse okResponse = OkResponse.builder().status(HttpStatus.OK.value()).message("Updated company").build();
-        return ResponseEntity.status(HttpStatus.OK).body(okResponse);
-    }
+
 
     /**
      * Updates an existing customer in the system.
@@ -108,6 +95,21 @@ public class AdminController {
     public ResponseEntity<OkResponse> updateCustomer (@RequestBody Customer customer) throws ObjectNotExistException, ObjectAlreadyExistException {
         adminService.updateCustomer(customer);
         OkResponse okResponse = OkResponse.builder().status(HttpStatus.OK.value()).message("Updated customer").build();
+        return ResponseEntity.status(HttpStatus.OK).body(okResponse);
+    }
+
+    /**
+     * Updates an existing company in the system.
+     * @param company The updated company details.
+     * @return ResponseEntity with OkResponse indicating the status and message.
+     * @throws ObjectNotExistException If the company with the specified ID does not exist.
+     * @throws ObjectAlreadyExistException If an attempt is made to change the company name to an existing name.
+     * @throws CannotUpdateOrDeleteException If an attempt is made to update the company name.
+     */
+    @PutMapping("/update/company")
+    public ResponseEntity<OkResponse> updateCompany (@RequestHeader(name = "Authorization") String token, @RequestBody Company company) throws ObjectNotExistException, ObjectAlreadyExistException, CannotUpdateOrDeleteException {
+        adminService.updateCompany(token, company);
+        OkResponse okResponse = OkResponse.builder().status(HttpStatus.OK.value()).message("Updated company").build();
         return ResponseEntity.status(HttpStatus.OK).body(okResponse);
     }
 

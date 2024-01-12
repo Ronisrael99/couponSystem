@@ -22,7 +22,7 @@ public abstract class ClientService {
      * Map to store the relationship between authentication tokens and corresponding user IDs.
      * To be replaced with Spring Security JWT in phase 3.
      */
-    protected Map<String, Integer> tokenToId = new HashMap<>();
+    public Map<String, Integer> tokenToId = new HashMap<>();
 
     /**
      * Abstract method for user login.

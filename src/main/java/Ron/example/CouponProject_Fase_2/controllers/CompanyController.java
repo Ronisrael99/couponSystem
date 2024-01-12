@@ -3,10 +3,12 @@ package Ron.example.CouponProject_Fase_2.controllers;
 import Ron.example.CouponProject_Fase_2.controllers.models.OkResponse;
 import Ron.example.CouponProject_Fase_2.exceptions.CannotAddException;
 import Ron.example.CouponProject_Fase_2.exceptions.CannotUpdateOrDeleteException;
+import Ron.example.CouponProject_Fase_2.exceptions.ObjectAlreadyExistException;
 import Ron.example.CouponProject_Fase_2.exceptions.ObjectNotExistException;
 import Ron.example.CouponProject_Fase_2.models.Category;
 import Ron.example.CouponProject_Fase_2.models.Company;
 import Ron.example.CouponProject_Fase_2.models.Coupon;
+import Ron.example.CouponProject_Fase_2.services.AdminService;
 import Ron.example.CouponProject_Fase_2.services.CompanyService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,9 +24,11 @@ import java.util.List;
 @CrossOrigin
 public class CompanyController {
     private CompanyService companyService;
+    private AdminService adminService;
 
-    public CompanyController(CompanyService companyService) {
+    public CompanyController(CompanyService companyService, AdminService adminService) {
         this.companyService = companyService;
+        this.adminService = adminService;
     }
 
     /**
@@ -115,6 +119,20 @@ public class CompanyController {
     public ResponseEntity<OkResponse> updateCoupon(@RequestHeader(name = "Authorization") String token, @RequestBody Coupon coupon) throws ObjectNotExistException, CannotUpdateOrDeleteException {
         companyService.updateCoupon(token, coupon);
         OkResponse okResponse = OkResponse.builder().status(HttpStatus.CREATED.value()).message("Updated coupon").build();
+        return ResponseEntity.status(HttpStatus.OK).body(okResponse);
+    }
+    /**
+     * Updates an existing company in the system.
+     * @param company The updated company details.
+     * @return ResponseEntity with OkResponse indicating the status and message.
+     * @throws ObjectNotExistException If the company with the specified ID does not exist.
+     * @throws ObjectAlreadyExistException If an attempt is made to change the company name to an existing name.
+     * @throws CannotUpdateOrDeleteException If an attempt is made to update the company name.
+     */
+    @PutMapping("/update/company")
+    public ResponseEntity<OkResponse> updateCompany (@RequestHeader(name = "Authorization") String token, @RequestBody Company company) throws ObjectNotExistException, ObjectAlreadyExistException, CannotUpdateOrDeleteException {
+        companyService.updateCompany(token, company);
+        OkResponse okResponse = OkResponse.builder().status(HttpStatus.OK.value()).message("Updated company").build();
         return ResponseEntity.status(HttpStatus.OK).body(okResponse);
     }
 }

@@ -4,6 +4,7 @@ import Ron.example.CouponProject_Fase_2.controllers.models.LoginRequest;
 import Ron.example.CouponProject_Fase_2.controllers.models.LoginResponse;
 import Ron.example.CouponProject_Fase_2.exceptions.UnauthorizedException;
 import Ron.example.CouponProject_Fase_2.login.LoginManager;
+import Ron.example.CouponProject_Fase_2.services.ClientService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

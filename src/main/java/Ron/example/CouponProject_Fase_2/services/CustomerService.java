@@ -7,6 +7,7 @@ import Ron.example.CouponProject_Fase_2.exceptions.*;
 import Ron.example.CouponProject_Fase_2.models.Category;
 import Ron.example.CouponProject_Fase_2.models.Coupon;
 import Ron.example.CouponProject_Fase_2.models.Customer;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;

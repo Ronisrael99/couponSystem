@@ -7,6 +7,7 @@ import Ron.example.CouponProject_Fase_2.exceptions.*;
 import Ron.example.CouponProject_Fase_2.models.Category;
 import Ron.example.CouponProject_Fase_2.models.Company;
 import Ron.example.CouponProject_Fase_2.models.Coupon;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -94,7 +95,7 @@ public class CompanyService extends ClientService{
                 }
             }
         }
-        if (coupon.getStartDate().isBefore(LocalDate.now()) || coupon.getStartDate().isAfter(coupon.getEndDate())){
+        if (coupon.getEndDate().isBefore(LocalDate.now()) || coupon.getStartDate().isAfter(coupon.getEndDate())){
             throw new CannotUpdateOrDeleteException("Date expired");
         } else if (coupon.getAmount() <= 0){
             throw new CannotUpdateOrDeleteException("Cannot update coupon with this amount");
@@ -168,5 +169,24 @@ public class CompanyService extends ClientService{
      */
     public Company getCompanyDetails(int companyId) throws ObjectNotExistException {
         return companyRepository.findById(companyId).orElseThrow(() -> new ObjectNotExistException("company not exist"));
+    }
+    /**
+     * Updates an existing company after performing necessary validations.
+     * @param company The updated company.
+     * @throws ObjectAlreadyExistException If another company with the same email already exists.
+     * @throws ObjectNotExistException If the company to be updated does not exist.
+     * @throws CannotUpdateOrDeleteException If the company name is being changed or another company with the same email already exists.
+     */
+    public void updateCompany(String token ,Company company) throws ObjectAlreadyExistException, ObjectNotExistException, CannotUpdateOrDeleteException {
+        Company existingCompany = companyRepository.findById(getIdFromToken(token)).orElseThrow(() -> new ObjectNotExistException("Company not exist"));
+        if (!existingCompany.getName().equals(company.getName())) {
+            throw new CannotUpdateOrDeleteException("Cannot update company name");
+        } else if (!existingCompany.getEmail().equals(company.getEmail()) &&
+                companyRepository.existsByEmail(company.getEmail())) {
+            throw new ObjectAlreadyExistException("Email already exist");
+        } else {
+            company.setCoupons(existingCompany.getCoupons());
+            companyRepository.save(company);
+        }
     }
 }

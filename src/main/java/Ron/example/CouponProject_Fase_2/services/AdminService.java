@@ -76,12 +76,12 @@ public class AdminService extends ClientService{
      * @throws ObjectNotExistException If the company to be updated does not exist.
      * @throws CannotUpdateOrDeleteException If the company name is being changed or another company with the same email already exists.
      */
-    public void updateCompany(Company company) throws ObjectAlreadyExistException, ObjectNotExistException, CannotUpdateOrDeleteException {
+    public void updateCompany(String token ,Company company) throws ObjectAlreadyExistException, ObjectNotExistException, CannotUpdateOrDeleteException {
         Company existingCompany = companyRepository.findById(company.getId()).orElseThrow(() -> new ObjectNotExistException("Company not exist"));
         if (!existingCompany.getName().equals(company.getName())) {
             throw new CannotUpdateOrDeleteException("Cannot update company name");
         } else if (!existingCompany.getEmail().equals(company.getEmail()) &&
-                    companyRepository.existsByEmail(company.getEmail())) {
+                companyRepository.existsByEmail(company.getEmail())) {
             throw new ObjectAlreadyExistException("Email already exist");
         } else {
             company.setCoupons(existingCompany.getCoupons());
