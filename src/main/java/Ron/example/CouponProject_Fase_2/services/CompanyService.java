@@ -181,7 +181,7 @@ public class CompanyService extends ClientService{
         Company existingCompany = companyRepository.findById(getIdFromToken(token)).orElseThrow(() -> new ObjectNotExistException("Company not exist"));
         if (!existingCompany.getName().equals(company.getName())) {
             throw new CannotUpdateOrDeleteException("Cannot update company name");
-        } else if (!existingCompany.getEmail().equals(company.getEmail()) &&
+        } else if (existingCompany.getEmail() != null && !existingCompany.getEmail().equals(company.getEmail()) &&
                 companyRepository.existsByEmail(company.getEmail())) {
             throw new ObjectAlreadyExistException("Email already exist");
         } else {
