@@ -1,8 +1,8 @@
 package Ron.example.CouponProject_Fase_2.services;
 
-import Ron.example.CouponProject_Fase_2.Repositories.CompanyRepository;
-import Ron.example.CouponProject_Fase_2.Repositories.CouponRepository;
-import Ron.example.CouponProject_Fase_2.Repositories.CustomerRepository;
+import Ron.example.CouponProject_Fase_2.repositories.CompanyRepository;
+import Ron.example.CouponProject_Fase_2.repositories.CouponRepository;
+import Ron.example.CouponProject_Fase_2.repositories.CustomerRepository;
 import Ron.example.CouponProject_Fase_2.exceptions.*;
 import Ron.example.CouponProject_Fase_2.models.Company;
 import Ron.example.CouponProject_Fase_2.models.Coupon;

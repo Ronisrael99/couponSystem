@@ -3,6 +3,8 @@ package Ron.example.CouponProject_Fase_2.controllers;
 import Ron.example.CouponProject_Fase_2.controllers.models.OkResponse;
 import Ron.example.CouponProject_Fase_2.exceptions.CannotAddException;
 import Ron.example.CouponProject_Fase_2.exceptions.ObjectNotExistException;
+import Ron.example.CouponProject_Fase_2.exceptions.TimeOutException;
+import Ron.example.CouponProject_Fase_2.exceptions.UnauthorizedException;
 import Ron.example.CouponProject_Fase_2.models.Category;
 import Ron.example.CouponProject_Fase_2.models.Coupon;
 import Ron.example.CouponProject_Fase_2.models.Customer;
@@ -33,7 +35,7 @@ public class CustomerController {
      * @throws ObjectNotExistException If the customer does not exist.
      */
     @GetMapping
-    public ResponseEntity<Customer> getCustomerDetails (@RequestHeader(name = "Authorization") String token) throws ObjectNotExistException {
+    public ResponseEntity<Customer> getCustomerDetails (@RequestHeader(name = "Authorization") String token) throws ObjectNotExistException, UnauthorizedException, TimeOutException {
         return ResponseEntity.ok(customerService.getCustomerDetails(token));
     }
 
@@ -46,7 +48,7 @@ public class CustomerController {
      * @throws ObjectNotExistException If the customer does not exist.
      */
     @GetMapping("/coupons")
-    public ResponseEntity<List<Coupon>> getAllCustomerCoupons(@RequestHeader(name = "Authorization") String token) throws ObjectNotExistException {
+    public ResponseEntity<List<Coupon>> getAllCustomerCoupons(@RequestHeader(name = "Authorization") String token) throws ObjectNotExistException, UnauthorizedException, TimeOutException {
         return ResponseEntity.ok(customerService.getAllCustomerCoupons(token));
     }
 
@@ -58,7 +60,7 @@ public class CustomerController {
      * @throws ObjectNotExistException If the customer does not exist.
      */
     @GetMapping("/coupons/category")
-    public ResponseEntity<List<Coupon>> getAllCustomersCouponsByCategory (@RequestHeader(name = "Authorization") String token,@RequestParam Category category) throws ObjectNotExistException {
+    public ResponseEntity<List<Coupon>> getAllCustomersCouponsByCategory (@RequestHeader(name = "Authorization") String token,@RequestParam Category category) throws ObjectNotExistException, UnauthorizedException, TimeOutException {
         return ResponseEntity.ok(customerService.getAllCustomerCategoryCoupons(token, category));
     }
 
@@ -70,7 +72,7 @@ public class CustomerController {
      * @throws ObjectNotExistException If the customer does not exist.
      */
     @GetMapping("/coupons/{price}")
-    public ResponseEntity<List<Coupon>> getAllCustomerCouponsToMaxPrice(@RequestHeader(name = "Authorization") String token, @PathVariable int price) throws ObjectNotExistException {
+    public ResponseEntity<List<Coupon>> getAllCustomerCouponsToMaxPrice(@RequestHeader(name = "Authorization") String token, @PathVariable int price) throws ObjectNotExistException, UnauthorizedException, TimeOutException {
         return ResponseEntity.ok(customerService.getAllCustomerMaxPriceCoupons(token, price));
     }
     /**
@@ -82,7 +84,7 @@ public class CustomerController {
      * @throws CannotAddException If the coupon cannot be purchased.
      */
     @PostMapping("/purchase/{id}")
-    public ResponseEntity<OkResponse> purchaseCoupon(@RequestHeader(name = "Authorization") String token,@PathVariable int id) throws ObjectNotExistException, CannotAddException {
+    public ResponseEntity<OkResponse> purchaseCoupon(@RequestHeader(name = "Authorization") String token,@PathVariable int id) throws ObjectNotExistException, CannotAddException, UnauthorizedException, TimeOutException {
         customerService.purchaseCoupon(token, id);
         OkResponse okResponse = OkResponse.builder().status(HttpStatus.OK.value()).message("coupon purchased").build();
         return ResponseEntity.status(HttpStatus.OK).body(okResponse);

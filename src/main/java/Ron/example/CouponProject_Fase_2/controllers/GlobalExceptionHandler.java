@@ -16,6 +16,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
 
+    @ExceptionHandler(TimeOutException.class)
+    public ResponseEntity<ErrorResponse> timeOutHandler(Exception e){
+        ErrorResponse errorResponse = ErrorResponse.builder().status(HttpStatus.REQUEST_TIMEOUT.value()).message(e.getMessage()).build();
+        return ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT).body(errorResponse);
+    }
+
     @ExceptionHandler(ObjectNotExistException.class)
     public ResponseEntity<ErrorResponse> ObjectNotExistHandler(Exception e){
         ErrorResponse errorResponse = ErrorResponse.builder().status(HttpStatus.NOT_FOUND.value()).message(e.getMessage()).build();

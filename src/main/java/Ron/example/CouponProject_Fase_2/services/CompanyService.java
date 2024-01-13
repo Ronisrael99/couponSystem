@@ -1,13 +1,13 @@
 package Ron.example.CouponProject_Fase_2.services;
 
-import Ron.example.CouponProject_Fase_2.Repositories.CompanyRepository;
-import Ron.example.CouponProject_Fase_2.Repositories.CouponRepository;
-import Ron.example.CouponProject_Fase_2.Repositories.CustomerRepository;
+import Ron.example.CouponProject_Fase_2.models.TokenInfo;
+import Ron.example.CouponProject_Fase_2.repositories.CompanyRepository;
+import Ron.example.CouponProject_Fase_2.repositories.CouponRepository;
+import Ron.example.CouponProject_Fase_2.repositories.CustomerRepository;
 import Ron.example.CouponProject_Fase_2.exceptions.*;
 import Ron.example.CouponProject_Fase_2.models.Category;
 import Ron.example.CouponProject_Fase_2.models.Company;
 import Ron.example.CouponProject_Fase_2.models.Coupon;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -22,6 +22,8 @@ public class CompanyService extends ClientService{
     private CompanyRepository companyRepository;
     private CustomerRepository customerRepository;
     private CouponRepository couponRepository;
+    private static final long TOKEN_EXPIRATION_TIME_MS = 30 * 60 * 1000;
+
 
     public CompanyService(CompanyRepository companyRepository, CustomerRepository customerRepository, CouponRepository couponRepository) {
         this.companyRepository = companyRepository;
@@ -42,7 +44,9 @@ public class CompanyService extends ClientService{
         if (companyRepository.existsByEmailAndPassword(email, password)){
             Company loggedInCompany = companyRepository.findByEmail(email);
             String uuid = UUID.randomUUID().toString();
-            tokenToId.put(uuid, loggedInCompany.getId());
+            long expiredTime = System.currentTimeMillis() + TOKEN_EXPIRATION_TIME_MS;
+            TokenInfo tokenInfo = new TokenInfo(loggedInCompany.getId(), expiredTime);
+            tokenToId.put(uuid, tokenInfo);
             return uuid;
         } else {
             throw new UnauthorizedException();
@@ -56,7 +60,7 @@ public class CompanyService extends ClientService{
      * @throws ObjectNotExistException If the company with the provided token does not exist.
      * @throws CannotAddException If the coupon cannot be added due to a duplicate title, expired date, zero or negative amount, or zero or negative price.
      */
-    public void addCoupon(String token, Coupon coupon) throws ObjectNotExistException, CannotAddException {
+    public void addCoupon(String token, Coupon coupon) throws ObjectNotExistException, CannotAddException, UnauthorizedException, TimeOutException {
         Company company = companyRepository.findById(getIdFromToken(token)).orElseThrow(() -> new ObjectNotExistException("Company not exist"));
         for (Coupon c:company.getCoupons()) {
             if (c.getTitle().equals(coupon.getTitle())){
@@ -82,7 +86,7 @@ public class CompanyService extends ClientService{
      * @throws CannotUpdateOrDeleteException If the coupon cannot be updated due to attempting to update other company coupon,
      * changing the title to an existing title, an expired date, zero or negative amount, or zero or negative price.
      */
-    public void updateCoupon(String token, Coupon coupon) throws ObjectNotExistException, CannotUpdateOrDeleteException {
+    public void updateCoupon(String token, Coupon coupon) throws ObjectNotExistException, CannotUpdateOrDeleteException, UnauthorizedException, TimeOutException {
         Company company = companyRepository.findById(getIdFromToken(token)).orElseThrow(() -> new ObjectNotExistException("Company not exist"));
         Coupon originalCoupon = couponRepository.findById(coupon.getId()).orElseThrow(() -> new ObjectNotExistException("Coupon not exist"));
         coupon.setCompany(company);
@@ -113,7 +117,7 @@ public class CompanyService extends ClientService{
      * @throws ObjectNotExistException        If the company or the coupon does not exist.
      * @throws CannotUpdateOrDeleteException If the coupon cannot be deleted due to attempting to delete other company coupon.
      */
-    public boolean deleteCoupon(String token, int couponId) throws ObjectNotExistException, CannotUpdateOrDeleteException {
+    public boolean deleteCoupon(String token, int couponId) throws ObjectNotExistException, CannotUpdateOrDeleteException, UnauthorizedException, TimeOutException {
         Company company = companyRepository.findById(getIdFromToken(token)).orElseThrow(() -> new ObjectNotExistException("Company not exist"));
         Coupon coupon = couponRepository.findById(couponId).orElseThrow(() -> new ObjectNotExistException("Coupon not exist"));
         for (Coupon c:company.getCoupons()) {
@@ -132,7 +136,7 @@ public class CompanyService extends ClientService{
      * @return A list of coupons belonging to the company.
      * @throws ObjectNotExistException If the company does not exist.
      */
-    public List<Coupon> getAllCompanyCoupons(String token) throws ObjectNotExistException {
+    public List<Coupon> getAllCompanyCoupons(String token) throws ObjectNotExistException, UnauthorizedException, TimeOutException {
         Company company = companyRepository.findById(getIdFromToken(token)).orElseThrow(() -> new ObjectNotExistException("Company not exist"));
         return couponRepository.findAllByCompany(company);
     }
@@ -144,7 +148,7 @@ public class CompanyService extends ClientService{
      * @return A list of coupons of the specified category.
      * @throws ObjectNotExistException If the company does not exist.
      */
-    public List<Coupon> getAllCompanyCouponsByCategory(String token, Category category) throws ObjectNotExistException {
+    public List<Coupon> getAllCompanyCouponsByCategory(String token, Category category) throws ObjectNotExistException, UnauthorizedException, TimeOutException {
         Company company = companyRepository.findById(getIdFromToken(token)).orElseThrow(() -> new ObjectNotExistException("Company not exist"));
         return couponRepository.findAllByCategoryAndCompany(category, company);
     }
@@ -156,7 +160,7 @@ public class CompanyService extends ClientService{
      * @return A list of coupons with a price less than the specified maximum price.
      * @throws ObjectNotExistException If the company does not exist.
      */
-    public List<Coupon> getAllCompanyCouponsToMaxPrice(String token, double maxPrice) throws ObjectNotExistException {
+    public List<Coupon> getAllCompanyCouponsToMaxPrice(String token, double maxPrice) throws ObjectNotExistException, UnauthorizedException, TimeOutException {
         Company company = companyRepository.findById(getIdFromToken(token)).orElseThrow(()-> new ObjectNotExistException("Company not exist"));
         return couponRepository.findAllByPriceLessThanAndCompany(maxPrice, company);
     }
@@ -177,7 +181,7 @@ public class CompanyService extends ClientService{
      * @throws ObjectNotExistException If the company to be updated does not exist.
      * @throws CannotUpdateOrDeleteException If the company name is being changed or another company with the same email already exists.
      */
-    public void updateCompany(String token ,Company company) throws ObjectAlreadyExistException, ObjectNotExistException, CannotUpdateOrDeleteException {
+    public void updateCompany(String token ,Company company) throws ObjectAlreadyExistException, ObjectNotExistException, CannotUpdateOrDeleteException, UnauthorizedException, TimeOutException {
         Company existingCompany = companyRepository.findById(getIdFromToken(token)).orElseThrow(() -> new ObjectNotExistException("Company not exist"));
         if (!existingCompany.getName().equals(company.getName())) {
             throw new CannotUpdateOrDeleteException("Cannot update company name");

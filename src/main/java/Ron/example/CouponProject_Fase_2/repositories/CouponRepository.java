@@ -1,4 +1,4 @@
-package Ron.example.CouponProject_Fase_2.Repositories;
+package Ron.example.CouponProject_Fase_2.repositories;
 
 import Ron.example.CouponProject_Fase_2.models.Category;
 import Ron.example.CouponProject_Fase_2.models.Company;

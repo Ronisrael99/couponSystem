@@ -1,11 +1,8 @@
-package Ron.example.CouponProject_Fase_2.Repositories;
+package Ron.example.CouponProject_Fase_2.repositories;
 
-import Ron.example.CouponProject_Fase_2.models.Coupon;
 import Ron.example.CouponProject_Fase_2.models.Customer;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 /**
  * This repository will control all operations related to customer ENTITY

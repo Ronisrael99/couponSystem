@@ -1,14 +1,11 @@
-package Ron.example.CouponProject_Fase_2.Repositories;
+package Ron.example.CouponProject_Fase_2.repositories;
 
 import Ron.example.CouponProject_Fase_2.models.Company;
-import Ron.example.CouponProject_Fase_2.models.Coupon;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 
 /**

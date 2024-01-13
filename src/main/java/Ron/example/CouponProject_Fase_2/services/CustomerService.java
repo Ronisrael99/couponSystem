@@ -1,13 +1,13 @@
 package Ron.example.CouponProject_Fase_2.services;
 
-import Ron.example.CouponProject_Fase_2.Repositories.CompanyRepository;
-import Ron.example.CouponProject_Fase_2.Repositories.CouponRepository;
-import Ron.example.CouponProject_Fase_2.Repositories.CustomerRepository;
+import Ron.example.CouponProject_Fase_2.models.TokenInfo;
+import Ron.example.CouponProject_Fase_2.repositories.CompanyRepository;
+import Ron.example.CouponProject_Fase_2.repositories.CouponRepository;
+import Ron.example.CouponProject_Fase_2.repositories.CustomerRepository;
 import Ron.example.CouponProject_Fase_2.exceptions.*;
 import Ron.example.CouponProject_Fase_2.models.Category;
 import Ron.example.CouponProject_Fase_2.models.Coupon;
 import Ron.example.CouponProject_Fase_2.models.Customer;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -22,6 +22,7 @@ public class CustomerService extends ClientService{
     private CompanyRepository companyRepository;
     private CustomerRepository customerRepository;
     private CouponRepository couponRepository;
+    private static final long TOKEN_EXPIRATION_TIME_MS = 30 * 60 * 1000;
 
     public CustomerService(CompanyRepository companyRepository, CustomerRepository customerRepository, CouponRepository couponRepository) {
         this.companyRepository = companyRepository;
@@ -40,7 +41,9 @@ public class CustomerService extends ClientService{
     public String login(String email, String password) throws UnauthorizedException{
         if (customerRepository.existsByEmailAndPassword(email, password)){
             String uuid = UUID.randomUUID().toString();
-            tokenToId.put(uuid, customerRepository.findCustomerByEmail(email).getId());
+            long expiredTime = System.currentTimeMillis() + TOKEN_EXPIRATION_TIME_MS;
+            TokenInfo tokenInfo = new TokenInfo(customerRepository.findCustomerByEmail(email).getId(), expiredTime);
+            tokenToId.put(uuid, tokenInfo);
             return uuid;
         } else {
             throw new UnauthorizedException();
@@ -55,7 +58,7 @@ public class CustomerService extends ClientService{
      * @throws CannotAddException If the customer attempts to purchase the same coupon more than once,
      * the coupon is out of stock, or the coupon's end date has passed.
      */
-    public void purchaseCoupon(String token, int couponId) throws ObjectNotExistException, CannotAddException {
+    public void purchaseCoupon(String token, int couponId) throws ObjectNotExistException, CannotAddException, UnauthorizedException, TimeOutException {
         Customer customer = customerRepository.findById(getIdFromToken(token)).orElseThrow(() -> new ObjectNotExistException("Customer not exist"));
         Coupon coupon = couponRepository.findById(couponId).orElseThrow(() -> new ObjectNotExistException("Coupon not exist"));
 
@@ -81,7 +84,7 @@ public class CustomerService extends ClientService{
      * @return A list of coupons belonging to the customer.
      * @throws ObjectNotExistException If the customer does not exist.
      */
-    public List<Coupon> getAllCustomerCoupons(String token) throws ObjectNotExistException {
+    public List<Coupon> getAllCustomerCoupons(String token) throws ObjectNotExistException, UnauthorizedException, TimeOutException {
         Customer customer = customerRepository.findById(getIdFromToken(token)).orElseThrow(() -> new ObjectNotExistException("Customer nor exist"));
         return customer.getCoupons();
     }
@@ -93,7 +96,7 @@ public class CustomerService extends ClientService{
      * @return A list of coupons of the specified category.
      * @throws ObjectNotExistException If the customer does not exist.
      */
-    public List<Coupon> getAllCustomerCategoryCoupons(String token, Category category) throws ObjectNotExistException {
+    public List<Coupon> getAllCustomerCategoryCoupons(String token, Category category) throws ObjectNotExistException, UnauthorizedException, TimeOutException {
         return getAllCustomerCoupons(token).stream().filter((c)-> c.getCategory().equals(category)).toList();
     }
 
@@ -104,7 +107,7 @@ public class CustomerService extends ClientService{
      * @return A list of coupons with a price less than or equal to the specified maximum price.
      * @throws ObjectNotExistException If the customer does not exist.
      */
-    public List<Coupon> getAllCustomerMaxPriceCoupons(String token, int maxPrice) throws ObjectNotExistException {
+    public List<Coupon> getAllCustomerMaxPriceCoupons(String token, int maxPrice) throws ObjectNotExistException, UnauthorizedException, TimeOutException {
         return getAllCustomerCoupons(token).stream().filter((c) -> c.getPrice() <= maxPrice).toList();
     }
 
@@ -114,7 +117,7 @@ public class CustomerService extends ClientService{
      * @return The details of the customer.
      * @throws ObjectNotExistException If the customer does not exist.
      */
-    public Customer getCustomerDetails(String token) throws ObjectNotExistException {
+    public Customer getCustomerDetails(String token) throws ObjectNotExistException, UnauthorizedException, TimeOutException {
         return customerRepository.findById(getIdFromToken(token)).orElseThrow(() -> new ObjectNotExistException("Customer not exist"));
     }
 }

@@ -1,5 +1,7 @@
 package Ron.example.CouponProject_Fase_2.aop;
 
+import Ron.example.CouponProject_Fase_2.controllers.models.errors.ErrorResponse;
+import Ron.example.CouponProject_Fase_2.exceptions.TimeOutException;
 import Ron.example.CouponProject_Fase_2.exceptions.UnauthorizedException;
 import Ron.example.CouponProject_Fase_2.services.AdminService;
 import Ron.example.CouponProject_Fase_2.services.CompanyService;
@@ -9,6 +11,8 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 /**
@@ -50,8 +54,28 @@ public class ClientTokenAop {
     @Around("execution(public * Ron.example.CouponProject_Fase_2.controllers.CompanyController.*(..))")
     public Object checkCompanyToken(ProceedingJoinPoint method) throws Throwable {
         String token = tokenHandler();
-        companyService.checkToken(token);
+        try {
+            companyService.checkToken(token);
+        } catch (TimeOutException e) {
+            // Handle TimeOutException separately
+            ErrorResponse errorResponse = ErrorResponse.builder()
+                    .status(HttpStatus.REQUEST_TIMEOUT.value())
+                    .message(e.getMessage())
+                    .build();
+            return ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT).body(errorResponse);
+        } catch (UnauthorizedException e) {
+            // Handle UnauthorizedException
+            ErrorResponse errorResponse = ErrorResponse.builder()
+                    .status(HttpStatus.UNAUTHORIZED.value())
+                    .message(e.getMessage())
+                    .build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+        }
         return method.proceed();
+
+//        String token = tokenHandler();
+//        companyService.checkToken(token);
+//        return method.proceed();
     }
 
     /**
@@ -63,8 +87,27 @@ public class ClientTokenAop {
     @Around("execution(public * Ron.example.CouponProject_Fase_2.controllers.CustomerController.*(..))")
     public Object checkCustomerToken(ProceedingJoinPoint method) throws Throwable {
         String token = tokenHandler();
-        customerService.checkToken(token);
+        try {
+            customerService.checkToken(token);
+        } catch (TimeOutException e) {
+            // Handle TimeOutException separately
+            ErrorResponse errorResponse = ErrorResponse.builder()
+                    .status(HttpStatus.REQUEST_TIMEOUT.value())
+                    .message(e.getMessage())
+                    .build();
+            return ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT).body(errorResponse);
+        } catch (UnauthorizedException e) {
+            // Handle UnauthorizedException
+            ErrorResponse errorResponse = ErrorResponse.builder()
+                    .status(HttpStatus.UNAUTHORIZED.value())
+                    .message(e.getMessage())
+                    .build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+        }
         return method.proceed();
+//        String token = tokenHandler();
+//        customerService.checkToken(token);
+//        return method.proceed();
     }
 
     /**

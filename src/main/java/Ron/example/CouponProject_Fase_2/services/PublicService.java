@@ -1,7 +1,7 @@
 package Ron.example.CouponProject_Fase_2.services;
 
-import Ron.example.CouponProject_Fase_2.Repositories.CouponRepository;
-import Ron.example.CouponProject_Fase_2.Repositories.CustomerRepository;
+import Ron.example.CouponProject_Fase_2.repositories.CouponRepository;
+import Ron.example.CouponProject_Fase_2.repositories.CustomerRepository;
 import Ron.example.CouponProject_Fase_2.exceptions.ObjectAlreadyExistException;
 import Ron.example.CouponProject_Fase_2.exceptions.ObjectNotExistException;
 import Ron.example.CouponProject_Fase_2.models.Coupon;

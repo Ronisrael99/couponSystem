@@ -1,10 +1,7 @@
 package Ron.example.CouponProject_Fase_2.controllers;
 
 import Ron.example.CouponProject_Fase_2.controllers.models.OkResponse;
-import Ron.example.CouponProject_Fase_2.exceptions.CannotAddException;
-import Ron.example.CouponProject_Fase_2.exceptions.CannotUpdateOrDeleteException;
-import Ron.example.CouponProject_Fase_2.exceptions.ObjectAlreadyExistException;
-import Ron.example.CouponProject_Fase_2.exceptions.ObjectNotExistException;
+import Ron.example.CouponProject_Fase_2.exceptions.*;
 import Ron.example.CouponProject_Fase_2.models.Category;
 import Ron.example.CouponProject_Fase_2.models.Company;
 import Ron.example.CouponProject_Fase_2.models.Coupon;
@@ -38,7 +35,7 @@ public class CompanyController {
      * @throws ObjectNotExistException If the company does not exist.
      */
     @GetMapping
-    public ResponseEntity<Company> getCompanyDetails (@RequestHeader(name = "Authorization") String token) throws ObjectNotExistException {
+    public ResponseEntity<Company> getCompanyDetails (@RequestHeader(name = "Authorization") String token) throws ObjectNotExistException, UnauthorizedException, TimeOutException {
         return ResponseEntity.ok(companyService.getCompanyDetails(companyService.getIdFromToken(token)));
     }
 
@@ -49,7 +46,7 @@ public class CompanyController {
      * @throws ObjectNotExistException If the company does not exist.
      */
     @GetMapping("/coupons")
-    public ResponseEntity<List<Coupon>> getAllCompanyCoupons (@RequestHeader(name = "Authorization") String token) throws ObjectNotExistException {
+    public ResponseEntity<List<Coupon>> getAllCompanyCoupons (@RequestHeader(name = "Authorization") String token) throws ObjectNotExistException, UnauthorizedException, TimeOutException {
         return ResponseEntity.ok(companyService.getAllCompanyCoupons(token));
     }
 
@@ -61,7 +58,7 @@ public class CompanyController {
      * @throws ObjectNotExistException If the company does not exist.
      */
     @GetMapping("/coupons/category")
-    public ResponseEntity<List<Coupon>> getAllCompanyCouponsByCategory(@RequestHeader(name = "Authorization") String token, @RequestParam Category category) throws ObjectNotExistException {
+    public ResponseEntity<List<Coupon>> getAllCompanyCouponsByCategory(@RequestHeader(name = "Authorization") String token, @RequestParam Category category) throws ObjectNotExistException, UnauthorizedException, TimeOutException {
         return ResponseEntity.ok(companyService.getAllCompanyCouponsByCategory(token, category));
     }
 
@@ -73,7 +70,7 @@ public class CompanyController {
      * @throws ObjectNotExistException If the company does not exist.
      */
     @GetMapping("/coupons/{price}")
-    public ResponseEntity<List<Coupon>> getAllCompanyCouponsToMaxPrice(@RequestHeader(name = "Authorization") String token, @PathVariable double price) throws ObjectNotExistException {
+    public ResponseEntity<List<Coupon>> getAllCompanyCouponsToMaxPrice(@RequestHeader(name = "Authorization") String token, @PathVariable double price) throws ObjectNotExistException, UnauthorizedException, TimeOutException {
         return ResponseEntity.ok(companyService.getAllCompanyCouponsToMaxPrice(token, price));
     }
 
@@ -86,7 +83,7 @@ public class CompanyController {
      * @throws CannotAddException If the coupon cannot be added.
      */
     @PostMapping("/coupon")
-    public ResponseEntity<OkResponse> addCoupon(@RequestHeader(name = "Authorization") String token, @RequestBody Coupon coupon) throws ObjectNotExistException, CannotAddException {
+    public ResponseEntity<OkResponse> addCoupon(@RequestHeader(name = "Authorization") String token, @RequestBody Coupon coupon) throws ObjectNotExistException, CannotAddException, UnauthorizedException, TimeOutException {
         companyService.addCoupon(token, coupon);
         OkResponse okResponse = OkResponse.builder().status(HttpStatus.CREATED.value()).message("Added coupon").build();
         return ResponseEntity.status(HttpStatus.CREATED).body(okResponse);
@@ -101,7 +98,7 @@ public class CompanyController {
      * @throws CannotUpdateOrDeleteException If the coupon cannot be deleted.
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<OkResponse> deleteCoupon(@RequestHeader(name = "Authorization") String token, @PathVariable int id) throws ObjectNotExistException, CannotUpdateOrDeleteException {
+    public ResponseEntity<OkResponse> deleteCoupon(@RequestHeader(name = "Authorization") String token, @PathVariable int id) throws ObjectNotExistException, CannotUpdateOrDeleteException, UnauthorizedException, TimeOutException {
         companyService.deleteCoupon(token, id);
         OkResponse okResponse = OkResponse.builder().status(HttpStatus.OK.value()).message("Coupon deleted").build();
         return ResponseEntity.status(HttpStatus.OK).body(okResponse);
@@ -116,7 +113,7 @@ public class CompanyController {
      * @throws CannotUpdateOrDeleteException If the coupon cannot be updated.
      */
     @PutMapping("/update/coupon")
-    public ResponseEntity<OkResponse> updateCoupon(@RequestHeader(name = "Authorization") String token, @RequestBody Coupon coupon) throws ObjectNotExistException, CannotUpdateOrDeleteException {
+    public ResponseEntity<OkResponse> updateCoupon(@RequestHeader(name = "Authorization") String token, @RequestBody Coupon coupon) throws ObjectNotExistException, CannotUpdateOrDeleteException, UnauthorizedException, TimeOutException {
         companyService.updateCoupon(token, coupon);
         OkResponse okResponse = OkResponse.builder().status(HttpStatus.CREATED.value()).message("Updated coupon").build();
         return ResponseEntity.status(HttpStatus.OK).body(okResponse);
@@ -130,7 +127,7 @@ public class CompanyController {
      * @throws CannotUpdateOrDeleteException If an attempt is made to update the company name.
      */
     @PutMapping("/update/company")
-    public ResponseEntity<OkResponse> updateCompany (@RequestHeader(name = "Authorization") String token, @RequestBody Company company) throws ObjectNotExistException, ObjectAlreadyExistException, CannotUpdateOrDeleteException {
+    public ResponseEntity<OkResponse> updateCompany (@RequestHeader(name = "Authorization") String token, @RequestBody Company company) throws ObjectNotExistException, ObjectAlreadyExistException, CannotUpdateOrDeleteException, UnauthorizedException, TimeOutException {
         companyService.updateCompany(token, company);
         OkResponse okResponse = OkResponse.builder().status(HttpStatus.OK.value()).message("Updated company").build();
         return ResponseEntity.status(HttpStatus.OK).body(okResponse);

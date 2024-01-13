@@ -1,6 +1,6 @@
 package Ron.example.CouponProject_Fase_2.checkExpired;
 
-import Ron.example.CouponProject_Fase_2.Repositories.CouponRepository;
+import Ron.example.CouponProject_Fase_2.repositories.CouponRepository;
 import Ron.example.CouponProject_Fase_2.models.Coupon;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
