@@ -1,9 +1,8 @@
 package Ron.example.CouponProject_Fase_2.controllers;
 
 import Ron.example.CouponProject_Fase_2.controllers.models.OkResponse;
-import Ron.example.CouponProject_Fase_2.exceptions.CannotUpdateOrDeleteException;
-import Ron.example.CouponProject_Fase_2.exceptions.ObjectAlreadyExistException;
-import Ron.example.CouponProject_Fase_2.exceptions.ObjectNotExistException;
+import Ron.example.CouponProject_Fase_2.exceptions.*;
+import Ron.example.CouponProject_Fase_2.models.Category;
 import Ron.example.CouponProject_Fase_2.models.Company;
 import Ron.example.CouponProject_Fase_2.models.Coupon;
 import Ron.example.CouponProject_Fase_2.models.Customer;
@@ -137,5 +136,17 @@ public class AdminController {
         adminService.deleteCustomer(id);
         OkResponse okResponse = OkResponse.builder().status(HttpStatus.OK.value()).message("Customer deleted").build();
         return ResponseEntity.status(HttpStatus.OK).body(okResponse);
+    }
+
+    /**
+     * Retrieves all coupons of a specific category associated with the current company.
+     * @param token The authentication token.
+     * @param category The category of coupons to retrieve.
+     * @return ResponseEntity containing the list of company coupons in the specified category.
+     * @throws ObjectNotExistException If the company does not exist.
+     */
+    @GetMapping("/coupons/category/{id}")
+    public ResponseEntity<List<Coupon>> getAllCompanyCouponsByCategory(@RequestHeader(name = "Authorization") String token,@PathVariable int id, @RequestParam Category category) throws ObjectNotExistException, UnauthorizedException, TimeOutException {
+        return ResponseEntity.ok(adminService.getAllCompanyCouponsByCategory(token,id, category));
     }
 }

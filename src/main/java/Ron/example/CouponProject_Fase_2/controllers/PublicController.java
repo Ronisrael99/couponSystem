@@ -3,6 +3,9 @@ package Ron.example.CouponProject_Fase_2.controllers;
 import Ron.example.CouponProject_Fase_2.controllers.models.OkResponse;
 import Ron.example.CouponProject_Fase_2.exceptions.ObjectAlreadyExistException;
 import Ron.example.CouponProject_Fase_2.exceptions.ObjectNotExistException;
+import Ron.example.CouponProject_Fase_2.exceptions.TimeOutException;
+import Ron.example.CouponProject_Fase_2.exceptions.UnauthorizedException;
+import Ron.example.CouponProject_Fase_2.models.Category;
 import Ron.example.CouponProject_Fase_2.models.Coupon;
 import Ron.example.CouponProject_Fase_2.models.Customer;
 import Ron.example.CouponProject_Fase_2.services.PublicService;
@@ -42,5 +45,16 @@ public class PublicController {
     @GetMapping("/coupon/{id}")
     public ResponseEntity<Coupon> getOneCoupon(@PathVariable int id) throws ObjectNotExistException {
         return ResponseEntity.ok(publicService.getOneCoupon(id));
+    }
+
+    /**
+     * Retrieves all coupons of a specific category associated with the current company.
+     * @param category The category of coupons to retrieve.
+     * @return ResponseEntity containing the list of company coupons in the specified category.
+     * @throws ObjectNotExistException If the company does not exist.
+     */
+    @GetMapping("/coupons/category")
+    public ResponseEntity<List<Coupon>> getAllCompanyCouponsByCategory(@RequestParam Category category) throws ObjectNotExistException, UnauthorizedException, TimeOutException {
+        return ResponseEntity.ok(publicService.getAllCouponsByCategory(category));
     }
 }

@@ -1,5 +1,10 @@
 package Ron.example.CouponProject_Fase_2.services;
 
+import Ron.example.CouponProject_Fase_2.exceptions.TimeOutException;
+import Ron.example.CouponProject_Fase_2.exceptions.UnauthorizedException;
+import Ron.example.CouponProject_Fase_2.models.Category;
+import Ron.example.CouponProject_Fase_2.models.Company;
+import Ron.example.CouponProject_Fase_2.repositories.CompanyRepository;
 import Ron.example.CouponProject_Fase_2.repositories.CouponRepository;
 import Ron.example.CouponProject_Fase_2.repositories.CustomerRepository;
 import Ron.example.CouponProject_Fase_2.exceptions.ObjectAlreadyExistException;
@@ -14,10 +19,12 @@ import java.util.List;
 public class PublicService {
     private CustomerRepository customerRepository;
     private CouponRepository couponRepository;
+    private CompanyRepository companyRepository;
 
-    public PublicService(CustomerRepository customerRepository, CouponRepository couponRepository) {
+    public PublicService(CustomerRepository customerRepository, CouponRepository couponRepository, CompanyRepository companyRepository) {
         this.customerRepository = customerRepository;
         this.couponRepository = couponRepository;
+        this.companyRepository = companyRepository;
     }
 
     /**
@@ -47,5 +54,14 @@ public class PublicService {
      */
     public Coupon getOneCoupon(int couponId) throws ObjectNotExistException {
         return couponRepository.findById(couponId).orElseThrow(() -> new ObjectNotExistException("Coupon not exist"));
+    }
+    /**
+     * Retrieves all coupons of a specific category.
+     * @param category The category to filter coupons.
+     * @return A list of coupons of the specified category.
+     * @throws ObjectNotExistException If the company does not exist.
+     */
+    public List<Coupon> getAllCouponsByCategory(Category category) throws ObjectNotExistException, UnauthorizedException, TimeOutException {
+        return couponRepository.findAllByCategory(category);
     }
 }

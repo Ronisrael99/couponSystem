@@ -57,4 +57,5 @@ public interface CouponRepository extends JpaRepository<Coupon, Integer> {
      * @return list of coupons filtered by max price
      */
     List<Coupon> findAllByPriceLessThanAndCompany(double maxPrice, Company company);
+    List<Coupon> findAllByCategory(Category category);
 }

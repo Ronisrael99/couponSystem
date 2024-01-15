@@ -1,5 +1,6 @@
 package Ron.example.CouponProject_Fase_2.services;
 
+import Ron.example.CouponProject_Fase_2.models.Category;
 import Ron.example.CouponProject_Fase_2.repositories.CompanyRepository;
 import Ron.example.CouponProject_Fase_2.repositories.CouponRepository;
 import Ron.example.CouponProject_Fase_2.repositories.CustomerRepository;
@@ -188,6 +189,16 @@ public class AdminService extends ClientService{
         return customerRepository.findById(customerId).orElseThrow(() -> new ObjectNotExistException("Customer not exist"));
     }
 
-
+    /**
+     * Retrieves all coupons of a specific category.
+     * @param token The unique token of the company.
+     * @param category The category to filter coupons.
+     * @return A list of coupons of the specified category.
+     * @throws ObjectNotExistException If the company does not exist.
+     */
+    public List<Coupon> getAllCompanyCouponsByCategory(String token,int id, Category category) throws ObjectNotExistException, UnauthorizedException, TimeOutException {
+        Company company = companyRepository.findById(id).orElseThrow(() -> new ObjectNotExistException("Company not exist"));
+        return couponRepository.findAllByCategoryAndCompany(category, company);
+    }
 
 }
